@@ -3,39 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Proyectos</title>
+    <title>Home | Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/home.js"></script>
-
 </head>
 <body>
 
-    <div class="wrapper">
-        <div class="card" style="max-width: 700px; text-align: left;">
+    <div class="topbar">
+        <h2>Mis Proyectos</h2>
+        <button id="logoutBtn">Cerrar Sesión</button>
+    </div>
 
-            <h2>Panel de Proyectos</h2>
+    <div class="container">
+        <button id="showFormBtn">Agregar Proyecto</button>
 
-            <button id="logoutBtn" style="background:#e74c3c; width:auto; margin-bottom: 1rem;">
-                Cerrar sesión
-            </button>
+        <div id="projectForm" class="card" style="display: none; margin-top: 20px;">
+            <h3 id="formTitle">Nuevo Proyecto</h3>
 
-            <button id="showFormBtn" style="width:auto; margin-bottom:1rem;">
-                Agregar proyecto
-            </button>
+            <input type="text" id="projectTitle" placeholder="Título">
+            <textarea id="projectDesc" placeholder="Descripción"></textarea>
+            <input type="text" id="projectTech" placeholder="Tecnologías (separadas por comas)">
+            <input type="text" id="projectRepo" placeholder="Repositorio (opcional, URL)">
 
-            <div id="projectForm" style="display:none; margin-bottom: 1rem;">
-                <input type="text" id="projectTitle" placeholder="Título del proyecto">
-                <input type="text" id="projectDesc" placeholder="Descripción">
-                <input type="text" id="projectTech" placeholder="Tecnologías separadas por coma">
-                <input type="text" id="projectRepo" placeholder="Repositorio GitHub">
-                <button id="saveProjectBtn">Guardar</button>
-            </div>
-
-            <h3 style="color:#2c3e50;">Proyectos Registrados</h3>
-
-            <div id="projectsList"></div>
-
+            <button id="saveProjectBtn">Guardar</button>
         </div>
+
+        <div id="projectsList"></div>
     </div>
 
 </body>

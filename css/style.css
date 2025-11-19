@@ -14,7 +14,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
-    background: var(--dark-bg) url('https://i.imgur.com/WfxMSQn.png') center/cover fixed;
+    background: var(--dark-bg);
     color: var(--light-text);
     display: flex;
     justify-content: center;
@@ -101,6 +101,24 @@ input:focus {
     border-color: var(--accent);
 }
 
+textarea {
+    width: 100%;
+    padding: 0.9rem;
+    margin: 0.5rem 0;
+    border-radius: 6px;
+    border: 2px solid var(--border-metal);
+    background: #111;
+    color: var(--light-text);
+    font-size: 1rem;
+    min-height: 120px;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
 #projectsList {
     margin-top: 1rem;
     display: grid;
@@ -159,4 +177,32 @@ input:focus {
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+}
+
+.topbar {
+    width: 100%;
+    background: rgba(20, 20, 20, 0.9);
+    padding: 1rem 2rem;
+    border-bottom: 2px solid var(--border-metal);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+}
+
+.topbar h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 7rem auto 2rem auto;
+    padding: 1rem;
 }
