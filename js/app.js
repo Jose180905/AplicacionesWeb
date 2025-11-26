@@ -34,8 +34,8 @@ document.getElementById("registerForm")?.addEventListener("submit", async e => {
 
         alert("Usuario registrado correctamente.");
         window.location.href = "login.html";
+
     } catch (err) {
-        console.error("Error de red al registrar:", err);
         alert("Error de red o servidor.");
     }
 });
@@ -59,7 +59,6 @@ document.getElementById("loginForm")?.addEventListener("submit", async e => {
         });
 
         const data = await res.json();
-        console.log("Login response:", data, "Status:", res.status);
 
         if (!res.ok || !data.userPublicData) {
             alert(data.message || "Credenciales incorrectas");
@@ -70,9 +69,19 @@ document.getElementById("loginForm")?.addEventListener("submit", async e => {
         localStorage.setItem("userId", data.userPublicData.id);
         localStorage.setItem("user", JSON.stringify(data.userPublicData));
 
-        window.location.href = "home.html";
+        const loginParams = new URLSearchParams(window.location.search);
+        const returnTo = loginParams.get("returnTo");
+
+        if (returnTo) {
+            let decoded = decodeURIComponent(returnTo);
+            const hasQuery = decoded.includes("?");
+            decoded += hasQuery ? "&fromLogin=1" : "?fromLogin=1";
+            window.location.href = decoded;
+        } else {
+            window.location.href = "home.html?fromLogin=1";
+        }
+
     } catch (err) {
-        console.error("Error de red al login:", err);
         alert("Error de red o servidor.");
     }
 });

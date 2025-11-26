@@ -70,13 +70,17 @@ button:hover {
 }
 
 #logoutBtn {
-    background: var(--blood);
-    border-color: #4a1a1a;
-    color: #fff;
+background: var(--blood);
+border-color: #4a1a1a;
+color: #fff;
+padding: 0.8rem 0.9rem;
+font-size: 0.9rem;
+width: auto;
+cursor: pointer;
+margin-left: 10px; 
 }
-
-#logoutBtn:hover {
-    background: #6d2323;
+#logoutBtn {
+background: #6d2323;
 }
 
 #projectForm {
@@ -180,24 +184,23 @@ textarea:focus {
 }
 
 .topbar {
-    width: 100%;
-    background: rgba(20, 20, 20, 0.9);
-    padding: 1rem 2rem;
-    border-bottom: 2px solid var(--border-metal);
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    backdrop-filter: blur(4px);
-    z-index: 10;
+width: 100%;
+background: rgba(20, 20, 20, 0.9);
+padding: 1rem 2rem;
+border-bottom: 2px solid var(--border-metal);
+position: fixed;
+top: 0;
+left: 0;
+display: flex;
+align-items: center;
+backdrop-filter: blur(4px);
+z-index: 10;
 }
 
 .topbar h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--accent);
+margin: 0;
+font-size: 1.5rem;
+color: var(--accent);
 }
 
 .container {

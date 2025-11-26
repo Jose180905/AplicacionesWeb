@@ -1,46 +1,54 @@
 const API_BASE = "https://portfolio-api-three-black.vercel.app/api/v1";
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadProjects();
-    document.getElementById("showFormBtn").addEventListener("click", () => {
-        document.getElementById("projectForm").style.display = "block";
-    });
-    document.getElementById("saveProjectBtn").addEventListener("click", createNewProject);
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "login.html";
-    });
+const showFormBtn = document.getElementById("showFormBtn");
+const projectForm = document.getElementById("projectForm");
+const saveProjectBtn = document.getElementById("saveProjectBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+showFormBtn.addEventListener("click", () => {
+    projectForm.style.display = projectForm.style.display === "none" ? "block" : "none";
+});
+
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("authToken");
+    window.location.href = "login.html";
 });
 
 async function loadProjects() {
     const token = localStorage.getItem("authToken");
     if (!token) return;
 
-    try {
-        const res = await fetch(`${API_BASE}/projects`, {
-            headers: { "auth-token": token }
-        });
-
-        const data = await res.json();
-        if (!res.ok) return;
-
-        renderProjects(data);
-    } catch (err) {
-        console.error("Error de red al cargar proyectos:", err);
-    }
+    const res = await fetch(`${API_BASE}/projects`, {
+        headers: { "auth-token": token }
+    });
+    if (!res.ok) return console.error("No se pudieron cargar los proyectos");
+    const projects = await res.json();
+    renderProjects(projects);
 }
 
 function renderProjects(projects) {
     const container = document.getElementById("projectsList");
     container.innerHTML = "";
+
     projects.forEach(p => {
+        const techList = Array.isArray(p.technologies) && p.technologies.length
+            ? p.technologies.join(", ")
+            : "Sin tecnologías";
+
+        const imgTag = Array.isArray(p.images) && p.images.length
+            ? `<img src="${p.images[0]}" alt="Imagen del proyecto" style="width:100%; max-height:200px; object-fit:cover; margin-bottom:0.5rem;">`
+            : "";
+
         const card = document.createElement("div");
         card.classList.add("project-card");
         card.innerHTML = `
+            ${imgTag}
             <h3>${p.title}</h3>
             <p>${p.description}</p>
+            <p><strong>Tecnologías:</strong> ${techList}</p>
             ${p.repository ? `<p>Repo: <a href="${p.repository}" target="_blank">${p.repository}</a></p>` : ""}
             <div class="card-actions">
+                <button class="btn-update" onclick="editProject('${p._id}')">Editar</button>
                 <button class="btn-delete" onclick="deleteProject('${p._id}')">Eliminar</button>
             </div>
         `;
@@ -48,85 +56,85 @@ function renderProjects(projects) {
     });
 }
 
-async function createNewProject() {
+saveProjectBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("authToken");
+    if (!token) return alert("Debes iniciar sesión primero");
+
+    const id = document.getElementById("projectId")?.value || "";
     const title = document.getElementById("projectTitle").value.trim();
     const description = document.getElementById("projectDesc").value.trim();
+    const repository = document.getElementById("projectRepo").value.trim();
     const technologies = document.getElementById("projectTech").value
         .split(",")
         .map(t => t.trim())
-        .filter(t => t);
-    const repository = document.getElementById("projectRepo").value.trim();
-    const token = localStorage.getItem("authToken");
+        .filter(t => t !== "");
+    const images = document.getElementById("projectImage")?.value
+        .split(",")
+        .map(url => url.trim())
+        .filter(url => url !== "");
 
-    if (!title || !description) {
-        alert("Debes llenar el título y la descripción.");
-        return;
-    }
-
-    if (!token) {
-        alert("No estás logueado o tu sesión expiró.");
-        return;
-    }
-
-    const project = {
-        title,
-        description,
-        technologies,
-        repository,
-        images: []
-    };
+    const projectData = { title, description, repository, technologies, images };
 
     try {
-        const res = await fetch(`${API_BASE}/projects`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "auth-token": token
-            },
-            body: JSON.stringify(project)
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            console.error("Error creando proyecto:", data);
-            alert(`Error al crear proyecto: ${data.message || "Revisa los campos"}`);
-            return;
+        if (id) {
+            await fetch(`${API_BASE}/projects/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "auth-token": token },
+                body: JSON.stringify(projectData)
+            });
+        } else {
+            await fetch(`${API_BASE}/projects`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "auth-token": token },
+                body: JSON.stringify(projectData)
+            });
         }
 
-        document.getElementById("projectForm").style.display = "none";
         document.getElementById("projectTitle").value = "";
         document.getElementById("projectDesc").value = "";
         document.getElementById("projectTech").value = "";
         document.getElementById("projectRepo").value = "";
+        if(document.getElementById("projectImage")) document.getElementById("projectImage").value = "";
+        if(document.getElementById("projectId")) document.getElementById("projectId").value = "";
+
         loadProjects();
     } catch (err) {
         console.error(err);
-        alert("Error de red o servidor.");
+        alert("Error al guardar el proyecto");
     }
+});
+
+
+async function editProject(id) {
+    const token = localStorage.getItem("authToken");
+    if (!token) return alert("Debes iniciar sesión primero");
+
+    const res = await fetch(`${API_BASE}/projects/${id}`, {
+        headers: { "auth-token": token }
+    });
+    const p = await res.json();
+
+    projectForm.style.display = "block";
+
+    document.getElementById("projectId").value = p._id;
+    document.getElementById("projectTitle").value = p.title;
+    document.getElementById("projectDesc").value = p.description;
+    document.getElementById("projectRepo").value = p.repository || "";
+    document.getElementById("projectTech").value = Array.isArray(p.technologies) ? p.technologies.join(", ") : "";
+    if(document.getElementById("projectImage")) 
+        document.getElementById("projectImage").value = Array.isArray(p.images) ? p.images.join(", ") : "";
 }
 
 async function deleteProject(id) {
     const token = localStorage.getItem("authToken");
-    if (!token) return;
+    if (!token) return alert("Debes iniciar sesión primero");
 
-    try {
-        const res = await fetch(`${API_BASE}/projects/${id}`, {
-            method: "DELETE",
-            headers: { "auth-token": token }
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            console.error("Error eliminando proyecto:", data);
-            alert(`No se pudo eliminar el proyecto: ${data.message || "Error desconocido"}`);
-            return;
-        }
-
-        loadProjects();
-    } catch (err) {
-        console.error(err);
-        alert("Error de red al eliminar proyecto.");
-    }
+    await fetch(`${API_BASE}/projects/${id}`, {
+        method: "DELETE",
+        headers: { "auth-token": token }
+    });
+    loadProjects();
 }
+
+loadProjects();

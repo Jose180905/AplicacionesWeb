@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Dashboard</title>
+
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/home.js"></script>
 </head>
@@ -20,10 +21,13 @@
         <div id="projectForm" class="card" style="display: none; margin-top: 20px;">
             <h3 id="formTitle">Nuevo Proyecto</h3>
 
+            <input type="hidden" id="projectId">
+
             <input type="text" id="projectTitle" placeholder="Título">
             <textarea id="projectDesc" placeholder="Descripción"></textarea>
             <input type="text" id="projectTech" placeholder="Tecnologías (separadas por comas)">
             <input type="text" id="projectRepo" placeholder="Repositorio (opcional, URL)">
+            <input type="text" id="projectImage" placeholder="URL de la imagen del proyecto (opcional)">
 
             <button id="saveProjectBtn">Guardar</button>
         </div>
